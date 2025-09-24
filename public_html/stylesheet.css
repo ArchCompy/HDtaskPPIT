@@ -1,0 +1,77 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+nav {
+    padding: 0.5rem;
+}
+
+nav a {
+    text-decoration: none;
+    margin: 0 1rem;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+#heading {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+
+    text-align: center;
+
+    background-image: url("redBG.jpg");
+    background-repeat: repeat;
+    background-size: 20%;
+    font-size: 3em;
+}
+
+footer {
+    text-align: center;
+    /* adjusted padding */
+    padding-top: 0.5rem;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    color: white;
+}
+
+.card-img-top {
+    max-width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.long-desc {
+    display: none; /* initially hiding the long description */
+}
+
+.long-desc.show {
+    display: block; /* showing the long description when the 'show' class is added */
+    line-height: 1.6; /* Improve line spacing for readability */
+    color: #333;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.was-validated .form-control:valid,
+.form-control.is-valid {
+    border-color: inherit;
+    padding-right: inherit;
+    background-image: none;
+    box-shadow: none;
+}
