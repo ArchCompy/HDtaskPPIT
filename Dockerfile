@@ -4,11 +4,14 @@ FROM node:18-alpine
 # setting the working directory in the container
 WORKDIR /app
 
-# Install curl and unzip
+# installing curl bash and unzip
 RUN apk add --no-cache bash curl unzip
 
 # copying package.json and package-lock.json to the working directory
 COPY package*.json ./
+
+# installing Snyk globally
+RUN npm install -g snyk
 
 # installing application dependencies
 RUN npm install
