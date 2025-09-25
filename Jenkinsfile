@@ -22,6 +22,24 @@ pipeline {
             }
         }
 
+
+
+stage('Check environment') {
+    steps {
+        sh '''
+            echo "Current user: $(whoami)"
+            echo "PATH=$PATH"
+            echo "Docker info:"
+            uname -a
+            which node
+            node -v || echo "Node not found"
+        '''
+    }
+}
+
+
+
+
         stage('Code Quality') {
             steps {
                 // sonarcloud analysis
