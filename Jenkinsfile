@@ -28,9 +28,9 @@ pipeline {
                 echo "Running SonarCloud analysis..."
                 sh '''
                 docker-compose run --rm bookstore-app sh -c "
-                curl -o sonar-scanner.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-aarch64.zip && \
-                unzip -o sonar-scanner.zip && \
-                ./sonar-scanner-7.2.0.5079-linux-aarch64/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN
+                    curl -o sonar-scanner.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-x64.zip && \
+                    unzip -o sonar-scanner.zip && \
+                    ./sonar-scanner-7.2.0.5079-linux-x64/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN
                 "
                 '''
             }
