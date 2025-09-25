@@ -24,6 +24,12 @@ pipeline {
 
 
 
+stage('Install Node') {
+    steps {
+        sh 'apk add --no-cache nodejs npm'
+    }
+}
+
 stage('Check environment') {
     steps {
         sh '''
