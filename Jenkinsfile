@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        SONAR_TOKEN = credentials('SONAR_TOKEN') // SonarCloud token from Jenkins
+    }
+    
     stages {
 
         stage('Build') {
@@ -20,9 +24,16 @@ pipeline {
 
         stage('Code Quality') {
             steps {
-                echo "Running code quality checks..."
-                // eeeeeexample: ESLint; replace with your preferred tool
-                sh 'docker-compose run --rm bookstore-app npm run lint || true'
+                // sonarcloud analysis
+                echo "Running SonarCloud analysis..."
+                sh '''
+                docker-compose run --rm bookstore-app sh -c "
+                curl -o sonar-scanner.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.722025-linux.zip && \
+                unzip -o sonar-scanner.zip && \
+                export PATH=$PWD/sonar-scanner-7.2.0.722025-linux/bin:$PATH && \
+                sonar-scanner -Dsonar.login=$SONAR_TOKEN
+                "
+                '''
             }
         }
 
