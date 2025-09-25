@@ -64,6 +64,7 @@ pipeline {
                             -Dsonar.exclusions=node_modules/**,__tests__/**,sonar-scanner-*/**,*.zip \\
                             -Dsonar.projectName="Bookstore Pipeline" \\
                             -Dsonar.sourceEncoding=UTF-8 \\
+                            -Dsonar.verbose=true
                             -Dsonar.javascript.node.maxspace=4096
                         """
                 
