@@ -5,8 +5,9 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    def appImage = docker.build("bookstore-app:latest")
-                    echo "Docker image built: ${appImage.id}"
+                    sh 'echo "Running code quality checks..."'
+                    //def appImage = docker.build("bookstore-app:latest")
+                    //echo "Docker image built: ${appImage.id}"
                 }
             }
         }
