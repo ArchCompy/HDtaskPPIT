@@ -72,22 +72,17 @@ pipeline {
             steps {
                 echo 'Security stage: scanning with Snyk...'
                 withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'TOKEN')]) {
-                    sh """
-                        # Run Snyk test and save JSON
+                   sh """
+                        
                         docker-compose run --rm -e SNYK_TOKEN=\$TOKEN bookstore-app sh -c \\
                             "snyk test --all-projects --json > snyk-report.json || true"
 
-                        # Generate HTML from JSON using Node package
-                        docker-compose run --rm bookstore-app sh -c \\
-                            "npx json2html snyk-report.json > snyk-report.html || true"
-
-                        # monitoring for vulnerabilities
                         docker-compose run --rm -e SNYK_TOKEN=\$TOKEN bookstore-app sh -c \\
                             "snyk monitor --all-projects || true"
                     """
 
                     // archiving the JSON report in Jenkins
-                    archiveArtifacts artifacts: 'snyk-report.json,snyk-report.html', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'snyk-report.json', allowEmptyArchive: true
                 }
             }
         }
