@@ -26,7 +26,10 @@ pipeline {
 
 stage('Install Node') {
     steps {
-        sh 'apk add --no-cache nodejs npm'
+        sh '''
+            apt-get update
+            apt-get install -y nodejs npm
+        '''
     }
 }
 
