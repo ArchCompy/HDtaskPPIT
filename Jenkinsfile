@@ -27,13 +27,9 @@ pipeline {
                 // sonarcloud analysis
                 echo "Running SonarCloud analysis..."
                 sh '''
-                docker-compose run --rm bookstore-app sh -c "
-                    docker run --rm \
-                        -e SONAR_HOST_URL=https://sonarcloud.io \
-                        -e SONAR_TOKEN=$SONAR_TOKEN \
-                        -v $(pwd):/usr/src \
-                        sonarsource/sonar-scanner-cli:latest
-                "
+                    curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-x64.zip
+                    unzip -o sonar-scanner.zip
+                    ./sonar-scanner-7.2.0.5079-linux-x64/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN
                 '''
             }
         }
