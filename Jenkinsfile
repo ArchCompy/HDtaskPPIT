@@ -39,34 +39,32 @@ pipeline {
                     sh 'rm -rf sonar-scanner-* .scannerwork || true'
 
                     sh """
-                        curl -sSLo sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux-aarch64.zip"
-                        unzip -oq sonar-scanner.zip
+            # Install Node.js 20 manually (ARM64 tarball)
+            curl -sSLo node.tar.xz https://nodejs.org/dist/v20.17.0/node-v20.17.0-linux-arm64.tar.xz
+            tar -xf node.tar.xz -C /usr/local --strip-components=1
+            node -v
+            which node
 
-                        # Verify the scanner was extracted
-                        ls -la sonar-scanner-${SONAR_SCANNER_VERSION}-linux-aarch64/bin/
-                        chmod +x sonar-scanner-${SONAR_SCANNER_VERSION}-linux-aarch64/bin/sonar-scanner
+            # Download and unpack SonarScanner
+            curl -sSLo sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux-aarch64.zip"
+            unzip -oq sonar-scanner.zip
+            chmod +x sonar-scanner-${SONAR_SCANNER_VERSION}-linux-aarch64/bin/sonar-scanner
 
-                        if ! command -v node &> /dev/null; then
-                            echo "Installing Node.js..."
-                            curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-                            apt-get install -y nodejs
-                        fi
-
-                        echo "Node version: \$(node --version)"
-
-                        # Run SonarScanner with full path
-                        ./sonar-scanner-${SONAR_SCANNER_VERSION}-linux-aarch64/bin/sonar-scanner \\
-                            -Dsonar.projectKey=ArchCompy_HDtaskPPIT \\
-                            -Dsonar.organization=archcompy \\
-                            -Dsonar.host.url=https://sonarcloud.io \\
-                            -Dsonar.token=\$SONAR_TOKEN \\
-                            -Dsonar.sources=. \\
-                            -Dsonar.exclusions=node_modules/**,__tests__/**,sonar-scanner-*/**,*.zip \\
-                            -Dsonar.projectName="Bookstore Pipeline" \\
-                            -Dsonar.sourceEncoding=UTF-8 \\
-                            -Dsonar.verbose=true
-                            -Dsonar.javascript.node.maxspace=4096
-                        """
+            # Run SonarScanner with explicit Node executable
+            ./sonar-scanner-${SONAR_SCANNER_VERSION}-linux-aarch64/bin/sonar-scanner \\
+                -Dsonar.projectKey=ArchCompy_HDtaskPPIT \\
+                -Dsonar.organization=archcompy \\
+                -Dsonar.host.url=https://sonarcloud.io \\
+                -Dsonar.token=\$SONAR_TOKEN \\
+                -Dsonar.sources=. \\
+                -Dsonar.exclusions=node_modules/**,__tests__/**,sonar-scanner-*/**,*.zip \\
+                -Dsonar.projectName="Bookstore Pipeline" \\
+                -Dsonar.sourceEncoding=UTF-8 \\
+                -Dsonar.javascript.node.maxspace=4096 \\
+                -Dsonar.nodejs.executable=/usr/local/bin/node \\
+                -Dsonar.verbose=true \\
+                -X
+        """
                 
             }
         }
