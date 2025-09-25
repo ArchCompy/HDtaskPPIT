@@ -3,9 +3,16 @@ pipeline {
 
     environment {
         SONAR_TOKEN = credentials('SONAR_TOKEN') // SonarCloud token from Jenkins
+        SONAR_SCANNER_VERSION = '6.2.1.4610'
     }
     
     stages {
+        stage('Checkout') {
+            steps {
+                echo "Checking out code..."
+                checkout scm
+            }
+        }
 
         stage('Build') {
             steps {
@@ -22,51 +29,45 @@ pipeline {
             }
         }
 
-
-
-stage('Install Node') {
-    steps {
-        sh '''
-            apt-get update
-            apt-get install -y nodejs npm
-        '''
-    }
-}
-
-stage('Check environment') {
-    steps {
-        sh '''
-            echo "Current user: $(whoami)"
-            echo "PATH=$PATH"
-            echo "Docker info:"
-            uname -a
-            which node
-            node -v || echo "Node not found"
-        '''
-    }
-}
-
-
-
-
         stage('Code Quality') {
             steps {
-                // sonarcloud analysis
-                echo "Running SonarCloud analysis..."
-                sh '''
-                    rm -rf .scannerwork
-                    curl -sSLo sonar-scanner.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-aarch64.zip
-                    unzip -o sonar-scanner.zip
-                    export PATH=$PWD/sonar-scanner-7.2.0.5079-linux-aarch64/bin:$PATH
-                    sonar-scanner -Dsonar.nodejs.executable=$(which node) -Dsonar.token=$SONAR_TOKEN
-                '''
+                script{
+                    // sonarcloud analysis
+                    echo "Running SonarCloud analysis..."
+
+                    // cleaning up any previous scanner installations
+                    sh 'rm -rf sonar-scanner-* .scannerwork'
+
+                    sh """
+                        curl -sSLo sonar-scanner.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-aarch64.zip
+                        unzip -o sonar-scanner.zip
+                        export PATH=$PWD/sonar-scanner-7.2.0.5079-linux-aarch64/bin:$PATH
+
+                        if ! command -v node &> /dev/null; then
+                            echo "Installing Node.js..."
+                            curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+                            apt-get install -y nodejs
+                        fi
+
+                        sonar-scanner \\
+                            -Dsonar.projectKey=ArchCompy_HDtaskPPIT \\
+                            -Dsonar.organization=archcompy \\
+                            -Dsonar.host.url=https://sonarcloud.io \\
+                            -Dsonar.token=\$SONAR_TOKEN \\
+                            -Dsonar.sources=. \\
+                            -Dsonar.exclusions=node_modules/**,__tests__/**,sonar-scanner-*/**,*.zip \\
+                            -Dsonar.projectName="Bookstore Pipeline" \\
+                            -Dsonar.sourceEncoding=UTF-8 \\
+                            -Dsonar.javascript.node.maxspace=4096
+                        """
+                }
             }
         }
 
         stage('Deploy') {
             steps {
                 echo "Deploying application..."
-                sh 'docker-compose up -d'
+                //          sh 'docker-compose up -d'
             }
         }
 

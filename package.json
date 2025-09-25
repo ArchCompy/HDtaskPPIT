@@ -1,19 +1,22 @@
 {
-  "name": "web-server",
+  "name": "bookstore-web-server",
   "version": "1.0.0",
-  "description": "Starter express web server template",
+  "description": "Bookstore web application with CI/CD pipeline",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "start": "node index.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "dev": "node index.js"
   },
   "keywords": [
     "node",
     "web",
     "server",
-    "template",
+    "bookstore",
     "sit774"
   ],
-  "author": "SIT774",
+  "author": "SITdeakin",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^2.2.0",
@@ -23,6 +26,7 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "jest": "^29.6.1"
+    "jest": "^29.6.1",
+    "supertest": "^6.3.3"
   }
 }
