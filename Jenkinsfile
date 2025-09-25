@@ -4,6 +4,7 @@ pipeline {
     environment {
         SONAR_TOKEN = credentials('SONAR_TOKEN') // SonarCloud token from Jenkins
         SONAR_SCANNER_VERSION = '6.2.1.4610'
+        SNYK_TOKEN = credentials('SNYK_TOKEN')
     }
     
     stages {
@@ -66,6 +67,18 @@ pipeline {
                 -X
         """
                 
+            }
+        }
+
+        stage('Security') {
+            steps {
+                echo 'Security stage...'
+                snykSecurity(
+                    snykInstallation: 'snyk-install',
+                    snykTokenId: 'SNYK_TOKEN',
+                    // place other optional parameters here, for example:
+                    additionalArguments: '--all-projects --json-file-output=snyk-report.json'
+                )
             }
         }
 
