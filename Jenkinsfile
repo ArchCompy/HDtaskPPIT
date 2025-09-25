@@ -54,6 +54,7 @@ stage('Check environment') {
                 // sonarcloud analysis
                 echo "Running SonarCloud analysis..."
                 sh '''
+                    rm -rf .scannerwork
                     curl -sSLo sonar-scanner.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-aarch64.zip
                     unzip -o sonar-scanner.zip
                     export PATH=$PWD/sonar-scanner-7.2.0.5079-linux-aarch64/bin:$PATH
