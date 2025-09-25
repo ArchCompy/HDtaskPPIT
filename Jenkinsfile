@@ -24,14 +24,15 @@ pipeline {
 
         stage('Code Quality') {
             steps {
+                // sonarcloud analysis
                 echo "Running SonarCloud analysis..."
                 sh '''
-                    docker run --rm \
-                        -v $PWD:/usr/src \
-                        -v $HOME/.sonar/cache:/opt/sonar-scanner/.sonar/cache \
-                        -e SONAR_HOST_URL="https://sonarcloud.io" \
-                        -e SONAR_LOGIN="$SONAR_TOKEN" \
-                        sonarsource/sonar-scanner-cli
+                docker-compose run --rm bookstore-app sh -c "
+                curl -o sonar-scanner.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-aarch64.zip && \
+                unzip -o sonar-scanner.zip && \
+                export PATH=$PWD/sonar-scanner-7.2.0.5079-linux-aarch64/bin:$PATH && \
+                sonar-scanner -Dsonar.login=$SONAR_TOKEN
+                "
                 '''
             }
         }
