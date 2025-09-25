@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         SONAR_TOKEN = credentials('SONAR_TOKEN') // SonarCloud token from Jenkins
-        SONAR_SCANNER_VERSION = '6.2.1.4610'
+        SONAR_SCANNER_VERSION = '7.2.0.5079'
     }
     
     stages {
@@ -31,17 +31,20 @@ pipeline {
 
         stage('Code Quality') {
             steps {
-                script{
+                
                     // sonarcloud analysis
                     echo "Running SonarCloud analysis..."
 
                     // cleaning up any previous scanner installations
-                    sh 'rm -rf sonar-scanner-* .scannerwork'
+                    sh 'rm -rf sonar-scanner-* .scannerwork || true'
 
                     sh """
-                        curl -sSLo sonar-scanner.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-aarch64.zip
-                        unzip -o sonar-scanner.zip
-                        export PATH=$PWD/sonar-scanner-7.2.0.5079-linux-aarch64/bin:$PATH
+                        curl -sSLo sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux-aarch64.zip"
+                        unzip -oq sonar-scanner.zip
+
+                        # Verify the scanner was extracted
+                        ls -la sonar-scanner-${SONAR_SCANNER_VERSION}-linux-aarch64/bin/
+                        chmod +x sonar-scanner-${SONAR_SCANNER_VERSION}-linux-aarch64/bin/sonar-scanner
 
                         if ! command -v node &> /dev/null; then
                             echo "Installing Node.js..."
@@ -49,7 +52,10 @@ pipeline {
                             apt-get install -y nodejs
                         fi
 
-                        sonar-scanner \\
+                        echo "Node version: \$(node --version)"
+
+                        # Run SonarScanner with full path
+                        ./sonar-scanner-${SONAR_SCANNER_VERSION}-linux-aarch64/bin/sonar-scanner \\
                             -Dsonar.projectKey=ArchCompy_HDtaskPPIT \\
                             -Dsonar.organization=archcompy \\
                             -Dsonar.host.url=https://sonarcloud.io \\
@@ -60,7 +66,7 @@ pipeline {
                             -Dsonar.sourceEncoding=UTF-8 \\
                             -Dsonar.javascript.node.maxspace=4096
                         """
-                }
+                
             }
         }
 
