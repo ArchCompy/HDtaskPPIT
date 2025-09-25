@@ -5,7 +5,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Install curl and unzip
-RUN apk add --no-cache curl unzip bash
+RUN apk add --no-cache bash curl unzip
 
 # copying package.json and package-lock.json to the working directory
 COPY package*.json ./
