@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         SONAR_TOKEN = credentials('SONAR_TOKEN') // SonarCloud token from Jenkins
-        SONAR_SCANNER_VERSION = '7.2.0.5079'
+        SONAR_SCANNER_VERSION = '6.2.1.4610'
     }
     
     stages {
