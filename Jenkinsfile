@@ -30,7 +30,7 @@ pipeline {
                     curl -sSLo sonar-scanner.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-aarch64.zip
                     unzip -o sonar-scanner.zip
                     export PATH=$PWD/sonar-scanner-7.2.0.5079-linux-aarch64/bin:$PATH
-                    sonar-scanner -Dsonar.token=$SONAR_TOKEN
+                    sonar-scanner -Dsonar.nodejs.executable=$(which node) -Dsonar.token=$SONAR_TOKEN
                 '''
             }
         }
