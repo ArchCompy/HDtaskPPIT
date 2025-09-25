@@ -39,7 +39,7 @@ stage('Snyk Credential Test') {
             // Test the token by querying Snyk API for your user info
             sh '''
                 echo "Testing Snyk API token..."
-                curl -s -H "Authorization: token $TOKEN" https://snyk.io/api/v1/orgs | jq .
+                curl -s -H "Authorization: token $TOKEN" https://snyk.io/api/v1/orgs
             '''
         }
     }
