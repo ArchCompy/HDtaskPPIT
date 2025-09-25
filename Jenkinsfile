@@ -27,9 +27,10 @@ pipeline {
                 // sonarcloud analysis
                 echo "Running SonarCloud analysis..."
                 sh '''
-                    curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-x64.zip
+                    curl -sSLo sonar-scanner.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.2.0.5079-linux-aarch64.zip
                     unzip -o sonar-scanner.zip
-                    ./sonar-scanner-7.2.0.5079-linux-x64/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN
+                    export PATH=$PWD/sonar-scanner-7.2.0.5079-linux-aarch64/bin:$PATH
+                    sonar-scanner -Dsonar.token=$SONAR_TOKEN
                 '''
             }
         }
