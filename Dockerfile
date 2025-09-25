@@ -4,6 +4,9 @@ FROM node:18-alpine
 # setting the working directory in the container
 WORKDIR /app
 
+# Install curl and unzip
+RUN apk add --no-cache curl unzip bash
+
 # copying package.json and package-lock.json to the working directory
 COPY package*.json ./
 
