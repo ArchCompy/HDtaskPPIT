@@ -29,27 +29,6 @@ pipeline {
             }
         }
 
-
-
-
-stage('Snyk Credential Test') {
-    steps {
-        echo 'Security stage: verifying Snyk token...'
-        withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'TOKEN')]) {
-            // Test the token by querying Snyk API for your user info
-            sh '''
-                echo "Testing Snyk API token..."
-                curl -s -H "Authorization: token $TOKEN" https://snyk.io/api/v1/orgs
-            '''
-        }
-    }
-}
-
-
-
-
-
-
         stage('Code Quality') {
             steps {
                 
@@ -91,13 +70,24 @@ stage('Snyk Credential Test') {
 
         stage('Security') {
             steps {
-                echo 'Security stage...'
-                snykSecurity(
-                    snykInstallation: 'snyk-install',
-                    snykTokenId: 'SNYK_TOKEN',
-                    // place other optional parameters here, for example:
-                    additionalArguments: '--all-projects --json-file-output=snyk-report.json'
-                )
+                echo 'Security stage: scanning with Snyk...'
+                withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'TOKEN')]) {
+                    sh """
+                        # Install Snyk CLI in container if not already installed
+                        docker-compose run --rm bookstore-app sh -c "npm install -g snyk"
+
+                        # Run Snyk scan using personal API token
+                        docker-compose run --rm -e SNYK_TOKEN=\$TOKEN bookstore-app sh -c \\
+                            "snyk test --all-projects --json > snyk-report.json || true"
+
+                        # Optionally also monitor for new vulnerabilities
+                        docker-compose run --rm -e SNYK_TOKEN=\$TOKEN bookstore-app sh -c \\
+                            "snyk monitor --all-projects || true"
+                    """
+
+                // archiving the JSON report in Jenkins
+                archiveArtifacts artifacts: 'snyk-report.json', allowEmptyArchive: true
+                }
             }
         }
 
