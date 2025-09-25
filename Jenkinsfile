@@ -29,6 +29,27 @@ pipeline {
             }
         }
 
+
+
+
+stage('Snyk Credential Test') {
+    steps {
+        echo 'Security stage: verifying Snyk token...'
+        withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'TOKEN')]) {
+            // Test the token by querying Snyk API for your user info
+            sh '''
+                echo "Testing Snyk API token..."
+                curl -s -H "Authorization: token $TOKEN" https://snyk.io/api/v1/orgs | jq .
+            '''
+        }
+    }
+}
+
+
+
+
+
+
         stage('Code Quality') {
             steps {
                 
