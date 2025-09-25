@@ -3,8 +3,7 @@ pipeline {
 
     environment {
         SONAR_TOKEN = credentials('SONAR_TOKEN') // SonarCloud token from Jenkins
-        SONAR_SCANNER_VERSION = '6.2.1.4610'
-        SNYK_TOKEN = credentials('SNYK_TOKEN')
+        SONAR_SCANNER_VERSION = '6.2.1.4610'    
     }
     
     stages {
@@ -63,10 +62,9 @@ pipeline {
                 -Dsonar.sourceEncoding=UTF-8 \\
                 -Dsonar.javascript.node.maxspace=4096 \\
                 -Dsonar.nodejs.executable=/usr/local/bin/node \\
-                -Dsonar.verbose=true \\
                 -X
         """
-                
+                // -Dsonar.verbose=true \\ add again if want additional debugging in console
             }
         }
 
