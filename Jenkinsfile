@@ -3,7 +3,9 @@ pipeline {
 
     environment {
         SONAR_TOKEN = credentials('SONAR_TOKEN') // SonarCloud token from Jenkins
-        SONAR_SCANNER_VERSION = '6.2.1.4610'    
+        SONAR_SCANNER_VERSION = '6.2.1.4610'
+        GIT_USER = credentials('git-credentials').username
+        GIT_PASS = credentials('git-credentials').password 
     }
     
     stages {
@@ -39,18 +41,18 @@ pipeline {
                     sh 'rm -rf sonar-scanner-* .scannerwork || true'
 
                     sh """
-            # Install Node.js 20 manually (ARM64 tarball)
+            # installing Node.js 20 manually (ARM64 tarball)
             curl -sSLo node.tar.xz https://nodejs.org/dist/v20.17.0/node-v20.17.0-linux-arm64.tar.xz
             tar -xf node.tar.xz -C /usr/local --strip-components=1
             node -v
             which node
 
-            # Download and unpack SonarScanner
+            # downloading and unpacking SonarScanner
             curl -sSLo sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux-aarch64.zip"
             unzip -oq sonar-scanner.zip
             chmod +x sonar-scanner-${SONAR_SCANNER_VERSION}-linux-aarch64/bin/sonar-scanner
 
-            # Run SonarScanner with explicit Node executable
+            # running SonarScanner with explicit Node executable
             ./sonar-scanner-${SONAR_SCANNER_VERSION}-linux-aarch64/bin/sonar-scanner \\
                 -Dsonar.projectKey=ArchCompy_HDtaskPPIT \\
                 -Dsonar.organization=archcompy \\
@@ -64,7 +66,6 @@ pipeline {
                 -Dsonar.nodejs.executable=/usr/local/bin/node \\
                 -X
         """
-                // -Dsonar.verbose=true \\ add again if want additional debugging in console
             }
         }
 
@@ -97,17 +98,16 @@ pipeline {
         stage('Release') {
             steps {
                 script {
-                    // Set Git identity for tagging
+                    // Git tagging
                     sh 'git config user.email "archmaster321@gmail.com"'
                     sh 'git config user.name "ArchCompy"'
                     
                     sh "git tag -a v1.0.${env.BUILD_NUMBER} -m 'Release for build ${env.BUILD_NUMBER}'"
                     
-                    withCredentials([usernamePassword(credentialsId: 'git-credentials', 
-                                                        usernameVariable: 'GIT_USER', 
-                                                        passwordVariable: 'GIT_PASS')]) {
-                        sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/ArchCompy/HDtaskPPIT.git --tags"
-                    }
+                    // Push tags using env variables
+                    sh '''
+                        git push https://$GIT_USER:$GIT_PASS@github.com/ArchCompy/HDtaskPPIT.git --tags
+                    '''
                     
                     echo "Release tagged as v1.0.${env.BUILD_NUMBER}"
                 }
