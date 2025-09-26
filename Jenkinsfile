@@ -96,17 +96,10 @@ pipeline {
 
         stage('Release') {
             steps {
-                echo "Promoting built image to Release version..."
-
                 script {
-                    // image built in the Build stage
-                    def builtImage = "archcompy/bookstore-app:${env.BUILD_NUMBER}"
-                    def releaseTag = "v1.0.0" // or derive from a Git tag or version file
-
-                    // tags the image locally as the release
-                    sh "docker tag ${builtImage} archcompy/bookstore-app:${releaseTag}"
-
-                    echo "Image promoted: ${builtImage} -> archcompy/bookstore-app:${releaseTag}"
+                    sh "git tag -a v1.0.${env.BUILD_NUMBER} -m 'Release for build ${env.BUILD_NUMBER}'"
+                    sh "git push origin v1.0.${env.BUILD_NUMBER}"
+                    echo "Release tagged as v1.0.${env.BUILD_NUMBER}"
                 }
             }
         }
