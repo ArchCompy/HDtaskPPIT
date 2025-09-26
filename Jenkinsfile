@@ -96,43 +96,23 @@ pipeline {
 
         stage('Release') {
             steps {
-                echo 'Releasing Docker image to Docker Hub...'
+                echo 'Pushing Docker image to Docker Hub...'
                 script {
                     def imageName = "archiedgar/bookstore-app"
                     def imageTag = "${env.BUILD_NUMBER}"
 
-                    // Login to Docker Hub using docker-compose (uses host Docker)
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
-                                              usernameVariable: 'DOCKER_USER',
-                                              passwordVariable: 'DOCKER_PASS')]) {
-                        sh """
-                            echo \$DOCKER_PASS | docker-compose run --rm bookstore-app sh -c \\
-                                'docker login -u \$DOCKER_USER --password-stdin'
-                        """
-                    }
+                    // Assume image is already built in Build stage
+                    sh "docker tag ${imageName}:${imageTag} ${imageName}:latest"
+                    sh "docker push ${imageName}:${imageTag}"
+                    sh "docker push ${imageName}:latest"
 
-                    // Tag the existing image built by docker-compose
-                    sh """
-                        docker-compose run --rm bookstore-app sh -c \\
-                            'docker tag bookstore-app ${imageName}:${imageTag}'
-
-                        docker-compose run --rm bookstore-app sh -c \\
-                            'docker tag bookstore-app ${imageName}:latest'
-                    """
-
-                    // Push the tags
-                    sh """
-                        docker-compose run --rm bookstore-app sh -c \\
-                            'docker push ${imageName}:${imageTag}'
-
-                        docker-compose run --rm bookstore-app sh -c \\
-                            'docker push ${imageName}:latest'
-                    """
-
-                    echo "Docker image released: ${imageName}:${imageTag} and :latest"
+                    echo "Docker image pushed: ${imageName}:${imageTag} and :latest"
                 }
             }
         }
+    
+    
+    
     }
 
     post {
