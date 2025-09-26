@@ -96,19 +96,32 @@ pipeline {
 
         stage('Release') {
             steps {
-                echo 'Building Docker image for release...'
+                echo 'Releasing Docker image to Docker Hub...'
                 script {
-                    def imageName = "your-dockerhub-username/bookstore-app"  // defining image name
-                    def imageTag = "${env.BUILD_NUMBER}"  // gives image a numbered tag
+                    def imageName = "archiedgar/bookstore-app"   // change to your repo
+                    def imageTag = "${env.BUILD_NUMBER}"         // version = Jenkins build number
 
-                    // builds docker image in workspace with above defined tag
+                   // Login to Docker Hub with credentials from Jenkins
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
+                                                        usernameVariable: 'DOCKER_USER',
+                                                        passwordVariable: 'DOCKER_PASS')]) {
+                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                    }
+
+                    // Build image (same as before)
                     sh "docker build -t ${imageName}:${imageTag} ."
-                    // packages code into docker image that can later be deployed
 
-                    echo "Docker image built: ${imageName}:${imageTag}"
+                    // Tag image as latest
+                    sh "docker tag ${imageName}:${imageTag} ${imageName}:latest"
+
+                    // Push both tags
+                    sh "docker push ${imageName}:${imageTag}"
+                    sh "docker push ${imageName}:latest"
+
+                    echo "Docker image released: ${imageName}:${imageTag} and :latest"
+                }
+            }
         }
-    }
-}
 
     }
 
