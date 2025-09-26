@@ -4,7 +4,6 @@ pipeline {
     environment {
         SONAR_TOKEN = credentials('SONAR_TOKEN') // SonarCloud token from Jenkins
         SONAR_SCANNER_VERSION = '6.2.1.4610'
-        git-credentials = credentials('git-credentials') 
     }
     
     stages {
@@ -104,7 +103,11 @@ pipeline {
                     sh "git tag -a v1.0.${env.BUILD_NUMBER} -m 'Release for build ${env.BUILD_NUMBER}'"
                     
                     // Push tags
-                    sh "git push https://ArchCompy:${env.git-credentials}@github.com/ArchCompy/HDtaskPPIT.git --tags"
+                    withCredentials([usernamePassword(credentialsId: 'git-credentials', 
+                                                        usernameVariable: 'GIT_USER', 
+                                                        passwordVariable: 'GIT_PASS')]) {
+                        sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/ArchCompy/HDtaskPPIT.git --tags"
+                    }
                     
                     echo "Release tagged as v1.0.${env.BUILD_NUMBER}"
                 }
