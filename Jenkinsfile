@@ -97,6 +97,10 @@ pipeline {
         stage('Release') {
             steps {
                 script {
+                    // Set Git identity for tagging
+                    sh 'git config user.email "archmaster321@gmail.com"'
+                    sh 'git config user.name "ArchCompy"'
+                    
                     sh "git tag -a v1.0.${env.BUILD_NUMBER} -m 'Release for build ${env.BUILD_NUMBER}'"
                     sh "git push origin v1.0.${env.BUILD_NUMBER}"
                     echo "Release tagged as v1.0.${env.BUILD_NUMBER}"
