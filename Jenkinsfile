@@ -102,7 +102,13 @@ pipeline {
                     sh 'git config user.name "ArchCompy"'
                     
                     sh "git tag -a v1.0.${env.BUILD_NUMBER} -m 'Release for build ${env.BUILD_NUMBER}'"
-                    sh "git push origin v1.0.${env.BUILD_NUMBER}"
+                    
+                    withCredentials([usernamePassword(credentialsId: 'git-credentials', 
+                                                        usernameVariable: 'GIT_USER', 
+                                                        passwordVariable: 'GIT_PASS')]) {
+                        sh "git push https://${GIT_USER}:${GIT_PASS}@github.com/ArchCompy/HDtaskPPIT.git --tags"
+                    }
+                    
                     echo "Release tagged as v1.0.${env.BUILD_NUMBER}"
                 }
             }
