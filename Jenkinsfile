@@ -96,10 +96,21 @@ pipeline {
 
         stage('Release') {
             steps {
-                echo 'Pushing Docker image to Docker Hub...'
-                // sh 'docker-compose push'
+                echo "Promoting built image to Release version..."
+
+                script {
+                    // image built in the Build stage
+                    def builtImage = "archcompy/bookstore-app:${env.BUILD_NUMBER}"
+                    def releaseTag = "v1.0.0" // or derive from a Git tag or version file
+
+                    // tags the image locally as the release
+                    sh "docker tag ${builtImage} archcompy/bookstore-app:${releaseTag}"
+
+                    echo "Image promoted: ${builtImage} -> archcompy/bookstore-app:${releaseTag}"
+                }
             }
         }
+
     
     
     
