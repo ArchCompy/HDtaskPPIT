@@ -97,17 +97,7 @@ pipeline {
         stage('Release') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
-                script {
-                    def imageName = "archiedgar/bookstore-app"
-                    def imageTag = "${env.BUILD_NUMBER}"
-
-                    // Assume image is already built in Build stage
-                    sh "docker tag ${imageName}:${imageTag} ${imageName}:latest"
-                    sh "docker push ${imageName}:${imageTag}"
-                    sh "docker push ${imageName}:latest"
-
-                    echo "Docker image pushed: ${imageName}:${imageTag} and :latest"
-                }
+                sh 'docker-compose push'
             }
         }
     
