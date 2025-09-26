@@ -96,8 +96,21 @@ pipeline {
 
         stage('Release') {
             steps {
-                echo 'Pushing Docker image to Docker Hub...'
-                sh 'docker-compose push'
+                script {
+                    echo "Building Docker image for release..."
+
+                    // Build the Docker image and tag it with the Jenkins build number
+                    def app = docker.build("archcompy/bookstore-app:${env.BUILD_NUMBER}")
+
+                    echo "Pushing Docker image to Docker Hub..."
+                    // Push image to Docker Hub using Jenkins credentials
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                        app.push("${env.BUILD_NUMBER}")  // push the build-number tag
+                        app.push("latest")               // push the latest tag
+                    }
+
+                    echo "Docker image released: archcompy/bookstore-app:${env.BUILD_NUMBER} and :latest"
+                }
             }
         }
     
