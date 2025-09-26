@@ -94,12 +94,6 @@ pipeline {
             }
         }
 
-stage('Docker Test') {
-    steps {
-        sh 'docker --version'
-    }
-}
-
         stage('Release') {
             steps {
                 echo 'Releasing Docker image to Docker Hub...'
@@ -115,7 +109,7 @@ stage('Docker Test') {
                     }
 
                     // Build image (same as before)
-                    sh "docker build -t ${imageName}:${imageTag} ."
+                   // sh "docker build -t ${imageName}:${imageTag} ."
 
                     // Tag image as latest
                     sh "docker tag ${imageName}:${imageTag} ${imageName}:latest"
