@@ -94,6 +94,12 @@ pipeline {
             }
         }
 
+stage('Docker Test') {
+    steps {
+        sh 'docker --version'
+    }
+}
+
         stage('Release') {
             steps {
                 echo 'Releasing Docker image to Docker Hub...'
