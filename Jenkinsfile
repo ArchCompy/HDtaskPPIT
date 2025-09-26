@@ -108,11 +108,9 @@ pipeline {
                         sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
                     }
 
-                    // Build image (same as before)
-                   // sh "docker build -t ${imageName}:${imageTag} ."
-
-                    // Tag image as latest
-                    sh "docker tag ${imageName}:${imageTag} ${imageName}:latest"
+                    // Tag the existing image as build number & latest
+                    sh "docker tag bookstore-app:latest ${imageName}:${imageTag}"
+                    sh "docker tag bookstore-app:latest ${imageName}:latest"
 
                     // Push both tags
                     sh "docker push ${imageName}:${imageTag}"
