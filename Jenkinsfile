@@ -94,6 +94,22 @@ pipeline {
             }
         }
 
+        stage('Release') {
+            steps {
+                echo 'Building Docker image for release...'
+                script {
+                    def imageName = "your-dockerhub-username/bookstore-app"  // defining image name
+                    def imageTag = "${env.BUILD_NUMBER}"  // gives image a numbered tag
+
+                    // builds docker image in workspace with above defined tag
+                    sh "docker build -t ${imageName}:${imageTag} ."
+                    // packages code into docker image that can later be deployed
+
+                    echo "Docker image built: ${imageName}:${imageTag}"
+        }
+    }
+}
+
     }
 
     post {
