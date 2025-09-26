@@ -97,7 +97,7 @@ pipeline {
         stage('Release') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
-                sh 'docker-compose push'
+                // sh 'docker-compose push'
             }
         }
     
