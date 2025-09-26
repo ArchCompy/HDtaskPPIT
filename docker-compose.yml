@@ -1,7 +1,7 @@
 services:
   bookstore-app:
     build: .
-    image: archcompy/bookstore-app:latest
+    image: archcompy/bookstore-app:${BUILD_NUMBER}
     container_name: bookstore-app
     ports:
       - "3000:3000"
