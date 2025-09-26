@@ -98,30 +98,41 @@ pipeline {
             steps {
                 echo 'Releasing Docker image to Docker Hub...'
                 script {
-                    def imageName = "archiedgar/bookstore-app"   // change to your repo
-                    def imageTag = "${env.BUILD_NUMBER}"         // version = Jenkins build number
+                    def imageName = "archiedgar/bookstore-app"
+                    def imageTag = "${env.BUILD_NUMBER}"
 
-                   // Login to Docker Hub with credentials from Jenkins
+                    // Login to Docker Hub using docker-compose (uses host Docker)
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
-                                                        usernameVariable: 'DOCKER_USER',
-                                                        passwordVariable: 'DOCKER_PASS')]) {
-                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                                              usernameVariable: 'DOCKER_USER',
+                                              passwordVariable: 'DOCKER_PASS')]) {
+                        sh """
+                            echo \$DOCKER_PASS | docker-compose run --rm bookstore-app sh -c \\
+                                'docker login -u \$DOCKER_USER --password-stdin'
+                        """
                     }
 
-                    // Tag the existing image as build number & latest
-                    sh "docker tag bookstore-app:latest ${imageName}:${imageTag}"
-                    sh "docker tag bookstore-app:latest ${imageName}:latest"
+                    // Tag the existing image built by docker-compose
+                    sh """
+                        docker-compose run --rm bookstore-app sh -c \\
+                            'docker tag bookstore-app ${imageName}:${imageTag}'
 
-                    // Push both tags
-                    sh "docker push ${imageName}:${imageTag}"
-                    sh "docker push ${imageName}:latest"
+                        docker-compose run --rm bookstore-app sh -c \\
+                            'docker tag bookstore-app ${imageName}:latest'
+                    """
+
+                    // Push the tags
+                    sh """
+                        docker-compose run --rm bookstore-app sh -c \\
+                            'docker push ${imageName}:${imageTag}'
+
+                        docker-compose run --rm bookstore-app sh -c \\
+                            'docker push ${imageName}:latest'
+                    """
 
                     echo "Docker image released: ${imageName}:${imageTag} and :latest"
                 }
             }
         }
-
-    }
 
     post {
         always {
