@@ -95,17 +95,11 @@ pipeline {
         }
 
         stage('Release') {
-    steps {
-        echo 'Pushing Docker image to Docker Hub...'
-        script {
-            def app = docker.image("archiedgar/bookstore-app:latest")
-            docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                app.push("${env.BUILD_NUMBER}")  // push build-number tag
-                app.push("latest")               // push latest tag
+            steps {
+                echo 'Pushing Docker image to Docker Hub...'
+                sh 'docker-compose push'
             }
         }
-    }
-}
     
     
     
