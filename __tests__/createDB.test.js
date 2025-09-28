@@ -4,8 +4,8 @@ const path = require('path');
 const DB_FILE = path.join(__dirname, 'classicReads.sqlite');
 
 beforeAll(() => {
-  // Just require createDB.js so it ensures tables exist
-  require('./createDB');
+  // checking table exists
+  require('./createDB.js');
 });
 
 test('Database file should exist', () => {
