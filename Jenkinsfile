@@ -24,7 +24,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo "Running application tests..."
-                // Run Jest directly using npx inside the container
+                // running Jest directly using npx inside the container
                 sh 'docker-compose run --rm bookstore-app npx jest'
             }
         }
