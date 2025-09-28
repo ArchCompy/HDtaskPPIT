@@ -202,15 +202,14 @@ app.get('/view-requests', (req, res) => {
 
 if (require.main === module) {
 
-// Tell our application to listen to requests at port 3000 on the localhost
-app.listen(port, () => {
-  // When the application starts, print to the console that our app is
-  // running at http://localhost:3000. Print another message indicating
-  // how to shut the server down.
-  console.log(`Web server running at: http://localhost:${port}`)
-  console.log(`Type Ctrl+C to shut down the web server`)
-});
-
+  // Tell our application to listen to requests at port 3000 on the localhost
+  app.listen(port, () => {
+    // When the application starts, print to the console that our app is
+    // running at http://localhost:3000. Print another message indicating
+    // how to shut the server down.
+    console.log(`Web server running at: http://localhost:${port}`)
+    console.log(`Type Ctrl+C to shut down the web server`)
+  });
 }
 
 // closes the database connection on process termination
@@ -224,5 +223,5 @@ process.on('SIGINT', () => {
   });
 });
 
-
+// so test can import app without starting server twice
 module.exports = app;

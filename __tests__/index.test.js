@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../index'); // import your Express app
+const app = require('../index'); // importing Express app
 
 describe('Basic route tests', () => {
   test('GET / should redirect to /home.html', async () => {
@@ -11,7 +11,7 @@ describe('Basic route tests', () => {
   test('GET /view-requests should respond', async () => {
     const res = await request(app).get('/view-requests');
     expect([200, 500]).toContain(res.statusCode); 
-    // either renders page (200) or returns 500 if DB empty/uninitialized
+    // either renders page (200) or returns 500 if DB empty or uninitialised
   });
 
   test('POST /submit-request with missing data returns 500', async () => {

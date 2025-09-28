@@ -39,7 +39,7 @@ pipeline {
                     sh 'rm -rf sonar-scanner-* .scannerwork || true'
 
                     sh """
-            # installing Node.js 20 manually (ARM64 tarball)
+            # installing Node.js 20 manually
             curl -sSLo node.tar.xz https://nodejs.org/dist/v20.17.0/node-v20.17.0-linux-arm64.tar.xz
             tar -xf node.tar.xz -C /usr/local --strip-components=1
             node -v
@@ -114,26 +114,21 @@ pipeline {
             }
         }
 
-
-
         stage('Monitoring') {
-    steps {
-        echo "Checking application health..."
-        sh '''
-        STATUS=$(docker-compose exec -T bookstore-app curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/home.html)
-        if [ "$STATUS" -ne 200 ]; then
-            echo "Application health check failed! Status: $STATUS"
-            exit 1
-        else
-            echo "Application is healthy (HTTP $STATUS)"
-        fi
-        '''
-    }
-}
+            steps {
+                echo "Checking application health..."
+                sh '''
+                STATUS=$(docker-compose exec -T bookstore-app curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/home.html)
+                if [ "$STATUS" -ne 200 ]; then
+                    echo "Application health check failed! Status: $STATUS"
+                    exit 1
+                else
+                    echo "Application is healthy (HTTP $STATUS)"
+                fi
+                '''
+            }
+        }
 
-    
-    
-    
     }
 
     post {
