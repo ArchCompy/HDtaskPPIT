@@ -117,24 +117,17 @@ pipeline {
 
 
         stage('Monitoring') {
-            steps {
-                echo "Checking application health..."
-
-                // health check
-                sh '''
-                STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/)
-                if [ "$STATUS" -ne 200 ]; then
-                    echo "Application health check failed! Status: $STATUS"
-                    exit 1
-                else
-                    echo "Application is healthy (HTTP $STATUS)"
-                fi
-                '''
-
-                // check Docker container status
-                //sh '''
-                //docker ps --filter "name=bookstore-app" --filter "status=running"
-                //'''
+    steps {
+        echo "Checking application health inside container..."
+        sh '''
+        STATUS=$(docker-compose exec -T bookstore-app curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/)
+        if [ "$STATUS" -ne 200 ]; then
+            echo "Application health check failed! Status: $STATUS"
+            exit 1
+        else
+            echo "Application is healthy (HTTP $STATUS)"
+        fi
+        '''
     }
 }
 
